@@ -151,7 +151,7 @@ const productSeeds: ProductSeed[] = [
     description: 'Montantes édition limitée, empiècements lime, semelle épaisse.',
     categoryId: 'cat-4',
     price: 25000,
-    quantity: 4,
+    quantity: 2,
     size: '43',
     imageUrl: 'https://picsum.photos/seed/high-tops-lime/600/600',
     createdAt: '2026-02-11T10:00:00.000Z',

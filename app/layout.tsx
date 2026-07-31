@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ConditionalNavbar } from "@/components/ConditionalNavbar";
+import { ConditionalFooter } from "@/components/ConditionalFooter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,6 +50,7 @@ export default function RootLayout({
           <CartProvider>
             <ConditionalNavbar />
             {children}
+            <ConditionalFooter />
           </CartProvider>
         </ThemeProvider>
       </body>

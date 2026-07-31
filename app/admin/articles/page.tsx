@@ -10,7 +10,8 @@ import { consumeFlashMessage } from '@/lib/flash';
 import { CategoryTag } from '@/components/CategoryTag';
 import { Toast } from '@/components/Toast';
 import { TrashIcon } from '@/components/TrashIcon';
-import { PencilIcon, SearchIcon } from '@/components/admin/icons';
+import { SearchIcon } from '@/components/SearchIcon';
+import { PencilIcon } from '@/components/admin/icons';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
 
 const LOW_STOCK_THRESHOLD = 5;
