@@ -1,4 +1,4 @@
-import type { Category, DeliveryZone, Order, Product } from '@/types';
+import type { Category, DeliveryZone, Order, OrderStatus, Product } from '@/types';
 import {
   categories as seedCategories,
   deliveryZones as seedDeliveryZones,
@@ -81,6 +81,16 @@ export async function createOrder(
 export async function getOrders(): Promise<Order[]> {
   await wait();
   return db.orders;
+}
+
+export async function updateOrderStatus(id: string, status: OrderStatus): Promise<Order> {
+  await wait();
+  const existing = db.orders.find((o) => o.id === id);
+  if (!existing) throw new Error(`Unknown order id: ${id}`);
+
+  const updated: Order = { ...existing, status };
+  db.orders = db.orders.map((o) => (o.id === id ? updated : o));
+  return updated;
 }
 
 export async function createProduct(data: FormData): Promise<Product> {
