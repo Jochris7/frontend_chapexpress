@@ -144,7 +144,17 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         <div className="overflow-hidden">
           {isBuying && (
             <div className="mt-10 border-t border-zinc-200 pt-10 dark:border-zinc-800">
-              <OrderForm product={product} />
+              <OrderForm
+                items={[
+                  {
+                    productId: product.id,
+                    product,
+                    quantity: 1,
+                    unitPrice: product.price,
+                    size: product.size,
+                  },
+                ]}
+              />
             </div>
           )}
         </div>

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
-import type { DeliveryZone, Order, PaymentMethod, Product } from '@/types';
+import type { DeliveryZone, Order, OrderItem, PaymentMethod } from '@/types';
 import { createOrder, getDeliveryZones } from '@/lib/api';
 import { formatPrice } from '@/lib/format';
 
@@ -15,7 +15,7 @@ const MOCK_PROMO_CODES = new Set(['BIENVENUE10', 'WELCOME']);
 const inputClass =
   'w-full rounded-lg border border-zinc-300 bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-accent focus:outline-none dark:border-zinc-700';
 
-export function OrderForm({ product }: { product: Product }) {
+export function OrderForm({ items }: { items: OrderItem[] }) {
   const [customerName, setCustomerName] = useState('');
   const [phone1, setPhone1] = useState('');
   const [phone1Touched, setPhone1Touched] = useState(false);
@@ -36,7 +36,7 @@ export function OrderForm({ product }: { product: Product }) {
   }, []);
 
   const selectedZone = deliveryZones.find((zone) => zone.id === deliveryZoneId) ?? null;
-  const subtotal = product.price;
+  const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   const deliveryFee = selectedZone?.fee ?? 0;
   const total = subtotal + deliveryFee;
 
@@ -69,15 +69,7 @@ export function OrderForm({ product }: { product: Product }) {
       deliveryZone: selectedZone,
       district: district.trim() || undefined,
       promoCode: promoStatus === 'valid' ? promoCode.trim().toUpperCase() : undefined,
-      items: [
-        {
-          productId: product.id,
-          product,
-          quantity: 1,
-          unitPrice: product.price,
-          size: product.size,
-        },
-      ],
+      items,
       subtotal,
       deliveryFee,
       total,
@@ -132,17 +124,31 @@ export function OrderForm({ product }: { product: Product }) {
       onSubmit={handleSubmit}
       className="grid grid-cols-1 gap-8 md:grid-cols-[280px_1fr]"
     >
-      <div className="flex gap-4 rounded-2xl border border-zinc-200 bg-surface p-4 dark:border-zinc-800 md:flex-col">
-        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-900 md:h-40 md:w-full">
-          <Image src={product.imageUrl} alt={product.title} fill className="object-cover" />
-        </div>
-        <div className="flex flex-col justify-center gap-1">
-          <p className="font-semibold text-foreground">{product.title}</p>
-          {product.size && (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">Taille : {product.size}</p>
-          )}
-          <p className="font-semibold text-foreground">{formatPrice(product.price)}</p>
-        </div>
+      <div className="flex flex-col gap-4 rounded-2xl border border-zinc-200 bg-surface p-4 dark:border-zinc-800">
+        {items.map((item) => (
+          <div key={`${item.productId}-${item.size ?? ''}`} className="flex gap-3">
+            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-900">
+              <Image
+                src={item.product.imageUrl}
+                alt={item.product.title}
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="flex flex-1 flex-col justify-center gap-0.5">
+              <p className="line-clamp-1 text-sm font-semibold text-foreground">
+                {item.product.title}
+              </p>
+              {item.size && (
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">Taille : {item.size}</p>
+              )}
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">Qté : {item.quantity}</p>
+            </div>
+            <p className="shrink-0 self-center text-sm font-semibold text-foreground">
+              {formatPrice(item.unitPrice * item.quantity)}
+            </p>
+          </div>
+        ))}
       </div>
 
       <div className="flex flex-col gap-6">
