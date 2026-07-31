@@ -32,9 +32,13 @@ const db = {
 export async function getProducts(filters?: {
   categoryId?: string;
   search?: string;
+  includeOutOfStock?: boolean;
 }): Promise<Product[]> {
   await wait();
   let result = db.products;
+  if (!filters?.includeOutOfStock) {
+    result = result.filter((p) => p.isAvailable);
+  }
   if (filters?.categoryId) {
     result = result.filter((p) => p.categoryId === filters.categoryId);
   }
