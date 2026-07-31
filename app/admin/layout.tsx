@@ -39,14 +39,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   if (!isAuthenticated) {
     return (
-      <div className="dark flex min-h-screen items-center justify-center bg-background">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <span className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="dark flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background">
       <AdminSidebar onLogout={handleLogout} />
       <main className="flex-1 p-8">{children}</main>
     </div>

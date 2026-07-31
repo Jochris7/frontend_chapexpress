@@ -72,10 +72,12 @@ function StatCard({
   isLoading: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-surface p-5">
-      <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">{label}</p>
+    <div className="rounded-2xl border border-zinc-200 bg-surface p-5 dark:border-white/10">
+      <p className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+        {label}
+      </p>
       {isLoading ? (
-        <div className="mt-3 h-7 w-20 animate-pulse rounded bg-white/10" />
+        <div className="mt-3 h-7 w-20 animate-pulse rounded bg-zinc-200 dark:bg-white/10" />
       ) : (
         <p className="mt-2 text-2xl font-bold text-foreground">{value}</p>
       )}

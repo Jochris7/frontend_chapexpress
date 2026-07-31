@@ -27,8 +27,8 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="dark flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-surface p-8">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-surface p-8 dark:border-white/10">
         <p className="mb-1 text-sm font-medium text-accent">Bon retour</p>
         <h1 className="mb-6 text-2xl font-bold text-foreground">Connexion admin</h1>
 
@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="admin@chapexpress.com"
-              className="w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-zinc-500 focus:border-accent focus:outline-none"
+              className="w-full rounded-lg border border-zinc-300 bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-accent focus:outline-none dark:border-white/10 dark:placeholder:text-zinc-500"
             />
           </label>
 
@@ -53,11 +53,11 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="••••••••"
-              className="w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-zinc-500 focus:border-accent focus:outline-none"
+              className="w-full rounded-lg border border-zinc-300 bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-accent focus:outline-none dark:border-white/10 dark:placeholder:text-zinc-500"
             />
           </label>
 
-          {error && <p className="text-xs text-red-400">{error}</p>}
+          {error && <p className="text-xs text-red-500 dark:text-red-400">{error}</p>}
 
           <button
             type="submit"
@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-zinc-500">
+        <p className="mt-6 text-center text-xs text-zinc-500 dark:text-zinc-400">
           Démo : n&apos;importe quel email / mot de passe fonctionne.
         </p>
       </div>
