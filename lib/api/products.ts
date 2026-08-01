@@ -1,5 +1,7 @@
 import type { Category, Product } from '@/types';
-import { ApiError, API_BASE_URL, apiFetch } from './client';
+import { apiClient } from './client';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 export interface BackendProduct {
   id: string;
@@ -37,15 +39,13 @@ export function mapProduct(product: BackendProduct): Product {
 export async function getProducts(filters?: {
   categoryId?: string;
   search?: string;
-  includeOutOfStock?: boolean;
 }): Promise<Product[]> {
   const params = new URLSearchParams();
   if (filters?.categoryId) params.set('categoryId', filters.categoryId);
   if (filters?.search) params.set('search', filters.search);
-  if (filters?.includeOutOfStock) params.set('includeOutOfStock', 'true');
 
   const query = params.toString();
-  const products = await apiFetch<BackendProduct[]>(
+  const products = await apiClient<BackendProduct[]>(
     `/products${query ? `?${query}` : ''}`,
   );
 
@@ -54,37 +54,9 @@ export async function getProducts(filters?: {
 
 export async function getProductById(id: string): Promise<Product | null> {
   try {
-    const product = await apiFetch<BackendProduct>(`/products/${id}`);
+    const product = await apiClient<BackendProduct>(`/products/${id}`);
     return mapProduct(product);
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 404) {
-      return null;
-    }
-    throw error;
+  } catch {
+    return null;
   }
-}
-
-export async function createProduct(data: FormData): Promise<Product> {
-  const product = await apiFetch<BackendProduct>('/products', {
-    method: 'POST',
-    body: data,
-    auth: true,
-  });
-  return mapProduct(product);
-}
-
-export async function updateProduct(id: string, data: FormData): Promise<Product> {
-  const product = await apiFetch<BackendProduct>(`/products/${id}`, {
-    method: 'PATCH',
-    body: data,
-    auth: true,
-  });
-  return mapProduct(product);
-}
-
-export function deleteProduct(id: string): Promise<void> {
-  return apiFetch<void>(`/products/${id}`, {
-    method: 'DELETE',
-    auth: true,
-  });
 }

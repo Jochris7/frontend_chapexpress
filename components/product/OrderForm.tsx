@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import type { DeliveryZone, Order, OrderItem, PaymentMethod } from '@/types';
-import { createOrder, getDeliveryZones } from '@/lib/api';
+import { createOrder } from '@/lib/api/orders';
+import { getDeliveryZones } from '@/lib/api/delivery-zones';
 import { formatPrice } from '@/lib/format';
 
 type SubmitState = 'idle' | 'submitting' | 'wave-redirect' | 'success';

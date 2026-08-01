@@ -1,5 +1,5 @@
 import type { DeliveryZone, Order, OrderStatus, PaymentMethod } from '@/types';
-import { ApiError, apiFetch } from './client';
+import { apiClient } from './client';
 import { mapProduct, type BackendProduct } from './products';
 
 interface BackendOrderItem {
@@ -59,52 +59,24 @@ function mapOrder(order: BackendOrder): Order {
 export async function createOrder(
   orderData: Omit<Order, 'id' | 'createdAt' | 'status'>,
 ): Promise<Order> {
-  const payload = {
-    customerName: orderData.customerName,
-    phone1: orderData.phone1,
-    phone2: orderData.phone2,
-    city: orderData.city,
-    deliveryZoneId: orderData.deliveryZoneId,
-    district: orderData.district,
-    promoCode: orderData.promoCode,
-    paymentMethod: orderData.paymentMethod,
-    items: orderData.items.map((item) => ({
-      productId: item.productId,
-      quantity: item.quantity,
-      size: item.size,
-    })),
-  };
-
-  const order = await apiFetch<BackendOrder>('/orders', {
+  const order = await apiClient<BackendOrder>('/orders', {
     method: 'POST',
-    body: payload,
+    body: {
+      customerName: orderData.customerName,
+      phone1: orderData.phone1,
+      phone2: orderData.phone2,
+      city: orderData.city,
+      deliveryZoneId: orderData.deliveryZoneId,
+      district: orderData.district,
+      promoCode: orderData.promoCode,
+      paymentMethod: orderData.paymentMethod,
+      items: orderData.items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        size: item.size,
+      })),
+    },
   });
 
-  return mapOrder(order);
-}
-
-export async function getOrders(): Promise<Order[]> {
-  const orders = await apiFetch<BackendOrder[]>('/orders', { auth: true });
-  return orders.map(mapOrder);
-}
-
-export async function getOrderById(id: string): Promise<Order | null> {
-  try {
-    const order = await apiFetch<BackendOrder>(`/orders/${id}`, { auth: true });
-    return mapOrder(order);
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 404) {
-      return null;
-    }
-    throw error;
-  }
-}
-
-export async function updateOrderStatus(id: string, status: OrderStatus): Promise<Order> {
-  const order = await apiFetch<BackendOrder>(`/orders/${id}/status`, {
-    method: 'PATCH',
-    body: { status },
-    auth: true,
-  });
   return mapOrder(order);
 }

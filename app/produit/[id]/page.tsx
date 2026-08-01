@@ -4,7 +4,7 @@ import { use, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Product } from '@/types';
-import { getProductById } from '@/lib/api';
+import { getProductById } from '@/lib/api/products';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/format';
 import { CategoryTag } from '@/components/CategoryTag';
