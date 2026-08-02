@@ -30,17 +30,24 @@ export async function apiClient<T>(
     body,
   });
 
+  const text = await response.text();
+  let data: unknown = null;
+
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = null;
+    }
+  }
+
   if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-    const message = Array.isArray(errorBody?.message)
-      ? errorBody.message.join(', ')
-      : (errorBody?.message ?? `Erreur ${response.status}`);
+    const errorData = data as { message?: string | string[] } | null;
+    const message = Array.isArray(errorData?.message)
+      ? errorData.message.join(', ')
+      : (errorData?.message ?? `Erreur ${response.status}`);
     throw new Error(message);
   }
 
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
-  return response.json() as Promise<T>;
+  return data as T;
 }

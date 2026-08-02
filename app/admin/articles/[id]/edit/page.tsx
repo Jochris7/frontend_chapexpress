@@ -3,7 +3,7 @@
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Product } from '@/types';
-import { getProductById } from '@/lib/api';
+import { getProductById } from '@/lib/api/products';
 import { ProductForm } from '@/components/admin/ProductForm';
 import { setFlashMessage } from '@/lib/flash';
 

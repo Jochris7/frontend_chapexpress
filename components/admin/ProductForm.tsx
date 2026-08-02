@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { DragEvent, FormEvent, ReactNode } from 'react';
 import type { Category, Product } from '@/types';
-import { createCategory, createProduct, getCategories, updateProduct } from '@/lib/api';
+import { createCategory, getCategories } from '@/lib/api/categories';
+import { createProduct, updateProduct } from '@/lib/api/products';
 import { formatPrice } from '@/lib/format';
 import { CategoryTag } from '@/components/CategoryTag';
 
@@ -114,25 +115,24 @@ export function ProductForm({ mode, product, onSuccess }: ProductFormProps) {
 
     try {
       if (mode === 'create') {
-        const formData = new FormData();
-        if (imageFile) formData.set('image', imageFile);
-        formData.set('title', title.trim());
-        formData.set('categoryId', selectedCategoryId);
-        formData.set('price', price);
-        formData.set('quantity', quantity);
-        if (size.trim()) formData.set('size', size.trim());
-        const saved = await createProduct(formData);
-        onSuccess(saved);
-      } else if (product) {
-        const category = categories.find((c) => c.id === selectedCategoryId) ?? product.category;
-        const saved = await updateProduct(product.id, {
+        if (!imageFile) return;
+        const saved = await createProduct({
           title: title.trim(),
           categoryId: selectedCategoryId,
-          category,
           price: priceValue,
           quantity: quantityValue,
           size: size.trim() || undefined,
-          imageUrl: imagePreviewUrl ?? product.imageUrl,
+          image: imageFile,
+        });
+        onSuccess(saved);
+      } else if (product) {
+        const saved = await updateProduct(product.id, {
+          title: title.trim(),
+          categoryId: selectedCategoryId,
+          price: priceValue,
+          quantity: quantityValue,
+          size: size.trim() || undefined,
+          image: imageFile ?? undefined,
         });
         onSuccess(saved);
       }
