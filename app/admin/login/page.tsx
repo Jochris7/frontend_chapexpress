@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '@/lib/auth';
+import { login, saveToken } from '@/lib/api/auth';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -19,7 +19,8 @@ export default function AdminLoginPage() {
     setIsSubmitting(true);
 
     try {
-      await login(email, password);
+      const { access_token: accessToken } = await login(email, password);
+      saveToken(accessToken);
       router.replace('/admin');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Connexion impossible.');
@@ -72,10 +73,6 @@ export default function AdminLoginPage() {
               {isSubmitting ? 'Connexion...' : 'Login'}
             </button>
           </form>
-
-          <p className="mt-8 text-center text-xs text-zinc-500 dark:text-zinc-400">
-            Démo : n&apos;importe quel email / mot de passe fonctionne.
-          </p>
         </div>
 
         <div className="hidden flex-col items-center justify-center gap-6 bg-accent/10 px-10 py-12 text-center md:flex">

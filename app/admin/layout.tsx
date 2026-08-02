@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { getSession, logout } from '@/lib/auth';
+import { isAuthenticated as checkIsAuthenticated, logout } from '@/lib/api/auth';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
@@ -14,15 +14,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const session = getSession();
-    // Reading localStorage (an external system) to gate this route on mount;
-    // same justified pattern as CartContext's hydration read.
+    const authenticated = checkIsAuthenticated();
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsAuthenticated(Boolean(session));
+    setIsAuthenticated(authenticated);
 
-    if (session && isLoginPage) {
+    if (authenticated && isLoginPage) {
       router.replace('/admin');
-    } else if (!session && !isLoginPage) {
+    } else if (!authenticated && !isLoginPage) {
       router.replace('/admin/login');
     }
   }, [isLoginPage, router]);
