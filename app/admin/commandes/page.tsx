@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import type { Order, OrderStatus } from '@/types';
-import { getOrders, updateOrderStatus } from '@/lib/api';
+import { getOrders, updateOrderStatus } from '@/lib/api/orders';
 import { formatPrice } from '@/lib/format';
 import { PAYMENT_LABELS, PAYMENT_STYLES, STATUS_LABELS, STATUS_STYLES } from '@/components/admin/orderStatus';
 import { OrderDetailPanel } from '@/components/admin/OrderDetailPanel';

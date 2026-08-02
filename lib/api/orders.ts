@@ -56,6 +56,23 @@ function mapOrder(order: BackendOrder): Order {
   };
 }
 
+export async function getOrders(): Promise<Order[]> {
+  const orders = await apiClient<BackendOrder[]>('/orders');
+  return orders.map(mapOrder);
+}
+
+export async function updateOrderStatus(
+  id: string,
+  status: Order['status'],
+): Promise<Order> {
+  const order = await apiClient<BackendOrder>(`/orders/${id}/status`, {
+    method: 'PATCH',
+    body: { status },
+  });
+
+  return mapOrder(order);
+}
+
 export async function createOrder(
   orderData: Omit<Order, 'id' | 'createdAt' | 'status'>,
 ): Promise<Order> {
