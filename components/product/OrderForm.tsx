@@ -31,9 +31,16 @@ export function OrderForm({ items }: { items: OrderItem[] }) {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [submitState, setSubmitState] = useState<SubmitState>('idle');
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getDeliveryZones().then(setDeliveryZones);
+    getDeliveryZones()
+      .then(setDeliveryZones)
+      .catch((err: unknown) => {
+        setError(
+          err instanceof Error ? err.message : 'Impossible de charger les zones de livraison.',
+        );
+      });
   }, []);
 
   const selectedZone = deliveryZones.find((zone) => zone.id === deliveryZoneId) ?? null;
@@ -60,30 +67,38 @@ export function OrderForm({ items }: { items: OrderItem[] }) {
     if (!canSubmit || !selectedZone || !paymentMethod) return;
 
     setSubmitState('submitting');
+    setError(null);
 
-    const order = await createOrder({
-      customerName: customerName.trim(),
-      phone1: phone1.replace(/\D/g, ''),
-      phone2: phone2.trim() ? phone2.replace(/\D/g, '') : undefined,
-      city: city.trim() || 'Abidjan',
-      deliveryZoneId: selectedZone.id,
-      deliveryZone: selectedZone,
-      district: district.trim() || undefined,
-      promoCode: promoStatus === 'valid' ? promoCode.trim().toUpperCase() : undefined,
-      items,
-      subtotal,
-      deliveryFee,
-      total,
-      paymentMethod,
-    });
+    try {
+      const order = await createOrder({
+        customerName: customerName.trim(),
+        phone1: phone1.replace(/\D/g, ''),
+        phone2: phone2.trim() ? phone2.replace(/\D/g, '') : undefined,
+        city: city.trim() || 'Abidjan',
+        deliveryZoneId: selectedZone.id,
+        deliveryZone: selectedZone,
+        district: district.trim() || undefined,
+        promoCode: promoStatus === 'valid' ? promoCode.trim().toUpperCase() : undefined,
+        items,
+        subtotal,
+        deliveryFee,
+        total,
+        paymentMethod,
+      });
 
-    if (paymentMethod === 'wave') {
-      setSubmitState('wave-redirect');
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (paymentMethod === 'wave') {
+        setSubmitState('wave-redirect');
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+
+      setConfirmedOrder(order);
+      setSubmitState('success');
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Une erreur est survenue lors de la commande.',
+      );
+      setSubmitState('idle');
     }
-
-    setConfirmedOrder(order);
-    setSubmitState('success');
   };
 
   if (submitState === 'wave-redirect') {
@@ -304,6 +319,8 @@ export function OrderForm({ items }: { items: OrderItem[] }) {
           />
           Je confirme avoir lu et accepté les conditions générales
         </label>
+
+        {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
 
         <button
           type="submit"

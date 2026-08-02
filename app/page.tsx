@@ -35,9 +35,14 @@ function HomePageContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getCategories().then(setCategories);
+    getCategories()
+      .then(setCategories)
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : 'Impossible de charger les catégories.');
+      });
   }, []);
 
   useEffect(() => {
@@ -47,15 +52,22 @@ function HomePageContent() {
     // click, or a search submitted from the navbar on another page).
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
+    setError(null);
 
     getProducts({
       categoryId: activeCategoryId ?? undefined,
       search: searchQuery || undefined,
-    }).then((data) => {
-      if (isCancelled) return;
-      setProducts(data);
-      setIsLoading(false);
-    });
+    })
+      .then((data) => {
+        if (isCancelled) return;
+        setProducts(data);
+        setIsLoading(false);
+      })
+      .catch((err: unknown) => {
+        if (isCancelled) return;
+        setError(err instanceof Error ? err.message : 'Impossible de charger les articles.');
+        setIsLoading(false);
+      });
 
     return () => {
       isCancelled = true;
@@ -88,7 +100,9 @@ function HomePageContent() {
         />
       </div>
 
-      {isLoading ? (
+      {error ? (
+        <p className="py-16 text-center text-sm text-red-500 dark:text-red-400">{error}</p>
+      ) : isLoading ? (
         <ProductGridSkeleton />
       ) : products.length === 0 ? (
         <p className="py-16 text-center text-zinc-500 dark:text-zinc-400">

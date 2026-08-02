@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import type { Order, Product } from '@/types';
-import { getOrders, getProducts } from '@/lib/api';
+import { getOrders } from '@/lib/api/orders';
+import { getProducts } from '@/lib/api/products';
 import { formatPrice } from '@/lib/format';
 
 function isSameDay(a: Date, b: Date): boolean {
@@ -20,10 +21,25 @@ function isSameMonth(a: Date, b: Date): boolean {
 export default function AdminDashboardPage() {
   const [products, setProducts] = useState<Product[] | null>(null);
   const [orders, setOrders] = useState<Order[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getProducts({ includeOutOfStock: true }).then(setProducts);
-    getOrders().then(setOrders);
+    let isCancelled = false;
+
+    Promise.all([getProducts({ includeOutOfStock: true }), getOrders()])
+      .then(([productsData, ordersData]) => {
+        if (isCancelled) return;
+        setProducts(productsData);
+        setOrders(ordersData);
+      })
+      .catch((err: unknown) => {
+        if (isCancelled) return;
+        setError(err instanceof Error ? err.message : 'Impossible de charger le dashboard.');
+      });
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   const isLoading = products === null || orders === null;
@@ -53,11 +69,17 @@ export default function AdminDashboardPage() {
   return (
     <div>
       <h1 className="mb-6 text-2xl font-bold text-foreground">Dashboard</h1>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <StatCard key={stat.label} label={stat.label} value={stat.value} isLoading={isLoading} />
-        ))}
-      </div>
+      {error ? (
+        <p className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-600 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400">
+          {error}
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((stat) => (
+            <StatCard key={stat.label} label={stat.label} value={stat.value} isLoading={isLoading} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
