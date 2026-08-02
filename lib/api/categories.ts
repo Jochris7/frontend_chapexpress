@@ -11,3 +11,9 @@ export function createCategory(name: string): Promise<Category> {
     body: { name },
   });
 }
+
+export function deleteCategory(id: string): Promise<void> {
+  return apiClient<void>(`/categories/${id}`, {
+    method: 'DELETE',
+  });
+}

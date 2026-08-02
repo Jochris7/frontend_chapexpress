@@ -29,16 +29,16 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
-      <div className="grid w-full max-w-4xl grid-cols-1 overflow-hidden rounded-3xl border border-zinc-200 bg-surface shadow-xl md:grid-cols-2 dark:border-white/10">
-        <div className="flex flex-col justify-center px-8 py-12 sm:px-12">
+    <div className="grid min-h-screen grid-cols-1 bg-background md:grid-cols-2">
+      <div className="flex flex-col justify-center px-8 py-12 sm:px-16 lg:px-24">
+        <div className="mx-auto w-full max-w-md">
           <p className="mb-1 text-sm font-medium text-accent">Bon retour</p>
-          <h1 className="mb-2 text-3xl font-bold text-foreground">Connexion admin</h1>
-          <p className="mb-8 text-sm text-zinc-500 dark:text-zinc-400">
+          <h1 className="mb-2 text-4xl font-bold text-foreground">Connexion admin</h1>
+          <p className="mb-10 text-sm text-zinc-500 dark:text-zinc-400">
             Gérez vos articles, vos commandes et vos catégories depuis un seul endroit.
           </p>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <label className="flex flex-col gap-1.5 text-sm">
               <span className="font-medium text-foreground">Email</span>
               <input
@@ -74,21 +74,21 @@ export default function AdminLoginPage() {
             </button>
           </form>
         </div>
+      </div>
 
-        <div className="hidden flex-col items-center justify-center gap-6 bg-accent/10 px-10 py-12 text-center md:flex">
-          <div className="relative h-64 w-64">
-            <Image
-              src="/images/image_login1.svg"
-              alt=""
-              fill
-              className="object-contain"
-              priority
-            />
-          </div>
-          <p className="text-lg font-bold text-foreground">
-            Gérez votre boutique simplement avec <span className="text-accent">ChapExpress</span>
-          </p>
+      <div className="hidden flex-col items-center justify-center gap-8 bg-accent/10 px-10 text-center md:flex">
+        <div className="relative h-80 w-80">
+          <Image
+            src="/images/image_login1.svg"
+            alt=""
+            fill
+            className="object-contain"
+            priority
+          />
         </div>
+        <p className="text-xl font-bold text-foreground">
+          Gérez votre boutique simplement avec <span className="text-accent">ChapExpress</span>
+        </p>
       </div>
     </div>
   );
